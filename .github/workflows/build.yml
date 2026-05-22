@@ -1,0 +1,58 @@
+name: Build iWatch助手 IPA
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          SDK=$(xcrun --sdk iphoneos --show-sdk-path)
+          swiftc -sdk "$SDK" \
+            -target arm64-apple-ios14.0 \
+            -O \
+            -framework UIKit -framework Foundation \
+            -o iWatchAssistant \
+            WatchPairFixApp.swift
+
+      - name: Package IPA
+        run: |
+          mkdir -p Payload/iWatchAssistant.app
+          cp iWatchAssistant Payload/iWatchAssistant.app/
+          cat > Payload/iWatchAssistant.app/Info.plist << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+          <key>CFBundleName</key><string>iWatch助手</string>
+          <key>CFBundleDisplayName</key><string>iWatch助手</string>
+          <key>CFBundleIdentifier</key><string>com.lengye.iwatchassistant</string>
+          <key>CFBundleVersion</key><string>1</string>
+          <key>CFBundleShortVersionString</key><string>1.0</string>
+          <key>CFBundleExecutable</key><string>iWatchAssistant</string>
+          <key>CFBundlePackageType</key><string>APPL</string>
+          <key>MinimumOSVersion</key><string>14.0</string>
+          <key>UIDeviceFamily</key><array><integer>1</integer></array>
+          <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string></array>
+          <key>UIStatusBarStyle</key><string>UIStatusBarStyleLightContent</string>
+          <key>UIViewControllerBasedStatusBarAppearance</key><false/>
+          </dict></plist>
+          EOF
+          cp ents.plist Payload/iWatchAssistant.app/
+          ldid -Sents.plist Payload/iWatchAssistant.app/iWatchAssistant 2>/dev/null || true
+          zip -qr iWatchAssistant.ipa Payload
+
+      - name: Upload IPA
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1.0
+          name: 巨魔iWatch助手 v1.0
+          files: iWatchAssistant.ipa
+          token: ${{ secrets.GITHUB_TOKEN }}
