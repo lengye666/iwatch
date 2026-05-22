@@ -77,7 +77,7 @@ class MainViewController: UIViewController {
         let deviceCard = makeCard()
         let deviceInfo = UILabel()
         deviceInfo.text = "\(getModel()) · iOS \(UIDevice.current.systemVersion)"
-        deviceInfo.font = .systemFont(ofSize: 13, weight: .medium, design: .monospaced)
+        deviceInfo.font = UIFont.monospacedSystemFont(ofSize: 13, weight: .medium)
         deviceInfo.textColor = UIColor(white: 0.65, alpha: 1)
         deviceInfo.textAlignment = .center
         deviceInfo.translatesAutoresizingMaskIntoConstraints = false
@@ -97,7 +97,7 @@ class MainViewController: UIViewController {
         stateTitle.translatesAutoresizingMaskIntoConstraints = false
         
         currentLabel.text = "点击下方按钮读取"
-        currentLabel.font = .systemFont(ofSize: 11, design: .monospaced)
+        currentLabel.font = UIFont.monospacedSystemFont(ofSize: 11, weight: .regular)
         currentLabel.textColor = UIColor(white: 0.55, alpha: 1)
         currentLabel.numberOfLines = 0
         currentLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -285,7 +285,7 @@ class MainViewController: UIViewController {
                 "/var/mobile/Library/Caches/com.apple.nanoregistryd",
             ] {
                 _ = shell("mkdir -p '\(dir)'")
-                _ = write(indexPlist, to: "\(dir)/NanoRegistryPairingCompatibilityIndex.plist")
+                write(indexPlist, to: "\(dir)/NanoRegistryPairingCompatibilityIndex.plist")
             }
             
             _ = shell("chown mobile:mobile /var/mobile/Library/Preferences/com.apple.NanoRegistry.plist 2>/dev/null")
