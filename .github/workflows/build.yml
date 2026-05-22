@@ -18,7 +18,7 @@ jobs:
           SDK=$(xcrun --sdk iphoneos --show-sdk-path)
           swiftc -sdk "$SDK" \
             -target arm64-apple-ios14.0 \
-            -O -parse-as-library \
+            -O \
             -framework UIKit -framework Foundation \
             -o iWatchAssistant \
             WatchPairFixApp.swift
