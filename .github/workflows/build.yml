@@ -46,7 +46,8 @@ jobs:
           </dict></plist>
           EOF
           cp ents.plist Payload/iWatchAssistant.app/
-          ldid -Sents.plist Payload/iWatchAssistant.app/iWatchAssistant 2>/dev/null || true
+          which ldid || brew install ldid 2>/dev/null || true
+          ldid -Sents.plist Payload/iWatchAssistant.app/iWatchAssistant
           zip -qr iWatchAssistant.ipa Payload
 
       - name: Upload IPA
