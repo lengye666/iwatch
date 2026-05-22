@@ -261,7 +261,7 @@ class MainViewController: UIViewController {
         
         DispatchQueue.global().async { [weak self] in
             let product = getModel()
-            shell("mkdir -p /var/mobile/Library/Preferences")
+            _ = shell("mkdir -p /var/mobile/Library/Preferences")
             
             let plist = """
             <?xml version="1.0" encoding="UTF-8"?>
@@ -284,12 +284,12 @@ class MainViewController: UIViewController {
                 "/var/mobile/Library/Caches/com.apple.NanoRegistry",
                 "/var/mobile/Library/Caches/com.apple.nanoregistryd",
             ] {
-                shell("mkdir -p '\(dir)'")
-                write(indexPlist, to: "\(dir)/NanoRegistryPairingCompatibilityIndex.plist")
+                _ = shell("mkdir -p '\(dir)'")
+                _ = write(indexPlist, to: "\(dir)/NanoRegistryPairingCompatibilityIndex.plist")
             }
             
-            shell("chown mobile:mobile /var/mobile/Library/Preferences/com.apple.NanoRegistry.plist 2>/dev/null")
-            shell("chmod 644 /var/mobile/Library/Preferences/com.apple.NanoRegistry.plist 2>/dev/null")
+            _ = shell("chown mobile:mobile /var/mobile/Library/Preferences/com.apple.NanoRegistry.plist 2>/dev/null")
+            _ = shell("chmod 644 /var/mobile/Library/Preferences/com.apple.NanoRegistry.plist 2>/dev/null")
             
             DispatchQueue.main.async {
                 self?.statusLabel.text = "✅ 修复完成 · 请重启手机后配对"
@@ -313,9 +313,9 @@ class MainViewController: UIViewController {
         readBtn.isEnabled = false; fixBtn.isEnabled = false; restoreBtn.isEnabled = false
         spinner.startAnimating(); statusLabel.text = "正在还原..."
         DispatchQueue.global().async { [weak self] in
-            shell("rm -f /var/mobile/Library/Preferences/com.apple.NanoRegistry.plist")
-            shell("rm -f /var/mobile/Library/Caches/com.apple.NanoRegistry/NanoRegistryPairingCompatibilityIndex.plist")
-            shell("rm -f /var/mobile/Library/Caches/com.apple.nanoregistryd/NanoRegistryPairingCompatibilityIndex.plist")
+            _ = shell("rm -f /var/mobile/Library/Preferences/com.apple.NanoRegistry.plist")
+            _ = shell("rm -f /var/mobile/Library/Caches/com.apple.NanoRegistry/NanoRegistryPairingCompatibilityIndex.plist")
+            _ = shell("rm -f /var/mobile/Library/Caches/com.apple.nanoregistryd/NanoRegistryPairingCompatibilityIndex.plist")
             DispatchQueue.main.async {
                 self?.statusLabel.text = "✅ 已还原 · 重启生效"
                 self?.spinner.stopAnimating()
@@ -347,7 +347,7 @@ func shell(_ cmd: String) -> String {
     var pid: pid_t = 0
     var attr: posix_spawnattr_t? = nil
     posix_spawnattr_init(&attr)
-    posix_spawnattr_setflags(&attr, POSIX_SPAWN_CLOEXEC_DEFAULT)
+    posix_spawnattr_setflags(&attr, Int16(POSIX_SPAWN_CLOEXEC_DEFAULT))
     
     var fileActions: posix_spawn_file_actions_t? = nil
     posix_spawn_file_actions_init(&fileActions)
@@ -364,5 +364,5 @@ func shell(_ cmd: String) -> String {
 
 func write(_ s: String, to path: String) {
     do { try s.write(toFile: path, atomically: true, encoding: .utf8) }
-    catch { shell("cat > '\(path)' << 'ENDOFFILE'\n\(s)\nENDOFFILE") }
+    catch { _ = shell("cat > '\(path)' << 'ENDOFFILE'\n\(s)\nENDOFFILE") }
 }
